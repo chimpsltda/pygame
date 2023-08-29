@@ -1,3 +1,8 @@
+import random
+import time
+import math
+import pygame
+
 # Configurações do jogo
 SCREEN_WIDTH, SCREEN_HEIGHT = 1980, 1080
 PLAYER_SPEED = 5
@@ -16,9 +21,6 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
-
-import pygame, random, time
-import math
                   #importa o jogador
                 #importa as configurações
                   #importa o __init__ com a importação de todos os inimigos
