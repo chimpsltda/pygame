@@ -1,16 +1,11 @@
-import random
-import time
-import math
-import pygame
-
 # Configurações do jogo
-SCREEN_WIDTH, SCREEN_HEIGHT = 1980, 1080
+SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
 PLAYER_SPEED = 5
-ENEMY_SPEED = 2
+ENEMY_SPEED = 1
 VELOCICADE_PERSEGUIDOR = 3.5
 OBJECTIVE_SIZE = 20
 ENEMY_SIZE = 20
-PLAYER_SIZE = 20
+PLAYER_SIZE = 5
 PROJECTILE_SIZE = 10
 OBJECTIVE_TIME = 3  # Tempo em segundos para completar um objetivo
 
@@ -21,6 +16,9 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+
+import pygame, random, time
+import math
                   #importa o jogador
                 #importa as configurações
                   #importa o __init__ com a importação de todos os inimigos
@@ -32,10 +30,11 @@ BLUE = (0, 0, 255)
 pygame.init()
 
 # Configurando a janela do jogo
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((1280, 720))
 
-background = pygame.image.load('texturas/grama.png')
-background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))  # Redimensionando a imagem para caber na tela
+background = pygame.image.load('texturas/grama2.png')
+background = pygame.transform.scale(background, (1280, 720))  
+# Redimensionando a imagem para caber na tela
 
 #classe da arma
 class Weapon:
@@ -116,7 +115,7 @@ class Projectile(pygame.sprite.Sprite):
             self.kill()
 #classe da pistola   
 class Pistol(Weapon):
-    DAMAGE = 2
+    DAMAGE = 3
     COOLDOWN = 1000  # 1000 milissegundos = 1 segundo
 
     def attack(self, position, target_position):
@@ -155,20 +154,21 @@ class Player(pygame.sprite.Sprite):
 
          # Para a sprite parada
         self.original_surf = pygame.image.load("sprites_walking/sprite_parado.png").convert_alpha()
-        self.original_surf = pygame.transform.scale(self.original_surf, (int(150 * scale_factor), int(180 * scale_factor)))
+        self.original_surf = pygame.transform.scale(self.original_surf, (int(70 * scale_factor), int(70 * scale_factor)))
         self.surf = self.original_surf.copy()
 
         # Para as sprites de caminhada
-        self.walk1_surf = pygame.transform.scale(pygame.image.load("sprites_walking/sprite_walk1.png").convert_alpha(), (int(150 * scale_factor), int(180 * scale_factor)))
-        self.walk2_surf = pygame.transform.scale(pygame.image.load("sprites_walking/sprite_walk2.png").convert_alpha(), (int(150 * scale_factor), int(180 * scale_factor)))
+        self.walk1_surf = pygame.transform.scale(pygame.image.load("sprites_walking/sprite_walk1.png").convert_alpha(), (int(70 * scale_factor), int(70 * scale_factor)))
+        self.walk2_surf = pygame.transform.scale(pygame.image.load("sprites_walking/sprite_walk2.png").convert_alpha(), (int(70 * scale_factor), int(70 * scale_factor)))
         
         self.surf = self.original_surf
-        self.rect = self.surf.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+        
+        
         
         self.walking = False
         self.walk_count = 0  # Para controlar a alternância entre walk1 e walk2
 
-        self.rect = self.surf.get_rect(center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+        self.rect = self.surf.get_rect(center = (1280/2, 720/2))
         self.health = 1
         self.damage = 1
         self.armas = [Pistol(), Shotgun()]
@@ -287,6 +287,15 @@ class Objective(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        self.down_sprites = [
+        pygame.image.load("sprites_walking/red_frente1.png").convert_alpha(),
+        pygame.image.load("sprites_walking/red_frente2.png").convert_alpha(),
+        pygame.image.load("sprites_walking/red_frente3.png").convert_alpha(),
+        pygame.image.load("sprites_walking/red_frente2.png").convert_alpha()
+        ]
+        ANIMATION_SPEED = 300  # Define a velocidade de animação. Menor é mais rápido.
+        self.current_sprite = 0
+        self.animation_time = pygame.time.get_ticks()
         self.surf = pygame.Surface((ENEMY_SIZE, ENEMY_SIZE))
         self.surf.fill(RED)
         self.direction = random.choice(['up', 'down', 'left', 'right'])
@@ -339,8 +348,19 @@ class Enemy(pygame.sprite.Sprite):
             font = pygame.font.Font(None, 20)
             text = font.render(self.damage_text, 1, WHITE)
             surface.blit(text, (self.rect.x, self.rect.y - 20))
-
+   
     def update(self):
+        ANIMATION_SPEED = 300
+        current_time = pygame.time.get_ticks()
+    
+        if self.direction == 'up':
+            self.rect.move_ip(0, -ENEMY_SPEED)
+        elif self.direction == 'down':
+            if current_time - self.animation_time > ANIMATION_SPEED:
+                self.surf = self.down_sprites[self.current_sprite]
+                self.current_sprite = (self.current_sprite + 1) % len(self.down_sprites)
+                self.animation_time = current_time
+        self.rect.move_ip(0, ENEMY_SPEED)       
         if self.direction == 'up':
             self.rect.move_ip(0, -ENEMY_SPEED)
         elif self.direction == 'down':
