@@ -2,7 +2,7 @@ import pygame, math, random, time
 from Armas.PistolClass import Pistol
 from Armas.ShotgunClass import Shotgun
 from GameData import *
-from XP.xpClass import *
+from xpClass import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):

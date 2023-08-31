@@ -1,14 +1,6 @@
-import pygame, random, time #Integrações do jogo
+import pygame, random, time#Integrações do jogo
 from GameData import *
-
-#Armas
-from Armas.WeaponClass import Weapon
-
-#Shotgun
-from Armas.ShotgunClass import Shotgun
-
-#Pistola
-from Armas.PistolClass import Pistol
+from WeaponClass import Weapon#Propriedades das armas e dos projéteis
 
 #Melee(ainda não funciona)
 class Fist(Weapon):
@@ -26,7 +18,7 @@ class Fist(Weapon):
         return True
 #------------------------------------------------------------------------------#------------------------------------------------------------------------------#
 #Jogador, Objetivos e Inimigos
-from NTT.Entities import *
+from Entities import *
 #------------------------------------------------------------------------------#------------------------------------------------------------------------------#
 # Inicializando Pygame
 pygame.init()

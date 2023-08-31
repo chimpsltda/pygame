@@ -1,8 +1,54 @@
 import pygame, math
-from Armas.WeaponClass import Weapon
-from Armas.ProjectileClass import Projectile
-from GameData import SCREEN_HEIGHT, SCREEN_WIDTH
+from GameData import *
 
+#Manutenção das armas
+class Weapon:
+    def __init__(self):
+        self.last_attack_time = 0
+
+    def attack(self, position, target_position):
+        raise NotImplementedError()
+
+    def can_attack(self, current_time):
+        raise NotImplementedError()
+    
+#Manutenção dos projéteis
+class Projectile(pygame.sprite.Sprite):
+    def __init__(self, start_pos, target_pos, damage):
+        super().__init__()
+        self.surf = pygame.Surface((PROJECTILE_SIZE, PROJECTILE_SIZE))
+        self.surf.fill(WHITE)
+        self.rect = self.surf.get_rect(center=start_pos)
+        
+        # Calcula a direção normalizada
+        dx = target_pos[0] - start_pos[0]
+        dy = target_pos[1] - start_pos[1]
+        distance = math.sqrt(dx**2 + dy**2)
+        self.direction = (dx/distance, dy/distance)
+
+        self.damage = damage  # O dano é passado ao criar o projétil
+
+    def update(self):
+        self.rect.move_ip(self.direction[0]*10, self.direction[1]*10)
+        if not screen.get_rect().colliderect(self.rect):
+            self.kill()
+
+#Pistola
+class Pistol(Weapon):
+    DAMAGE = 3
+    COOLDOWN = 300  # 1000 milissegundos = 1 segundo
+
+    def attack(self, position, target_position):
+        # Cria um projétil se estiver fora do cooldown
+        if self.can_attack(pygame.time.get_ticks()):
+            self.last_attack_time = pygame.time.get_ticks()
+            return [Projectile(position, target_position, damage=self.DAMAGE)]
+        return []
+
+    def can_attack(self, current_time):
+        return current_time - self.last_attack_time > self.COOLDOWN
+
+#Escopeta
 class Shotgun(Weapon):
     PROJECTILE_COUNT = 5
     DAMAGE = 5
@@ -49,3 +95,4 @@ class Shotgun(Weapon):
         return current_time - self.last_attack_time > self.COOLDOWN
     
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
