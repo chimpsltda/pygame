@@ -26,3 +26,6 @@ Segue abaixo uma explicação de cada pasta de módulos e seus conteúdos:
 
 ### XP
 - Contém um único módulo que engloba a quantia e a barra de XP
+
+### GameData
+- Guarda informações do funciomanento do jogo como velocidade de entidades e do jogador, cores e tamanho da tela.
